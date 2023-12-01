@@ -6,7 +6,7 @@ else
     pushd cg-logshipper; git pull; popd;
 fi
 
-cp -p  project_conf/*.conf cg-logshipper/project_conf;
+cp -rp project_conf cg-logshipper;
 
 cd cg-logshipper;
 
