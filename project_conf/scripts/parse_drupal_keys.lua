@@ -1,7 +1,8 @@
 -- gets drupal record and returns a record with a json string of the drupal attributes
-function parse_keys_with_eq_pairs(tag, timestamp, record)
-    print("record: ")
-    print(record)
+-- expects to following format:
+-- [drupal "base_url":"@base_url","severity":"@severity","type":"@type","date":"@date","uid":"@uid","request_uri":"@request_uri","refer":"@referer","ip":"@ip","link":"@link","message":"@message"]
+
+function parse_drupal_keys(tag, timestamp, record)
     if (record["drupal"] ~= nil) then
         record["drupal"] = drupal_attributes_json_string(record["drupal"])
     end
@@ -10,6 +11,7 @@ function parse_keys_with_eq_pairs(tag, timestamp, record)
 end
 
 function drupal_attributes_json_string(orig_string)
+    
     -- wrap drupal field in brackets to make it parsable json
     final_string = "{" .. orig_string .. "}"
     return final_string

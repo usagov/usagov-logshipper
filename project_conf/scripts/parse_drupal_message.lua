@@ -1,25 +1,25 @@
 -- Parse a message from drupal.
 -- Assumes this template format: [drupal base_url="@base_url", severity="@severity", type="@type", date="@date", uid="@uid", request_url="@request-uri", refer="@referer", ip="@ip", link="@link", message="@message"]
 
--- Splits a string of foo="bar" pairs and makes parsable json out of it. 
+-- Splits a string of foo="bar" pairs and makes parsable json out of it.
 function parse_drupal_message(tag, timestamp, record)
    if record['drupal'] then
       -- The message is always the last element. It may contain all manner of unescaped content
-      -- (with quotation marks around the whole thing), so we just look for message=".*" at  
+      -- (with quotation marks around the whole thing), so we just look for message=".*" at
       -- the end of the string.
-      -- Then we'll grab the content between ' message="\' and the last quotation mark. 
-      local msg_start, msg_end = string.find(record['drupal'], " message=\".*\"$")
-      local msg_content_start = msg_start + 10
+      -- Then we'll grab the content between ' message="\' and the last quotation mark.
+      local msg_start, msg_end = string.find(record['drupal'], " \"message\"=\".*\"$")
+      local msg_content_start = msg_start + 12
       local msg_content_end = msg_end - 1
       local drupal_message = record['drupal'].sub(msg_content_start, msg_content_end)
 
       -- The rest of the string is the part up to that pattern. Now we know exactly
-      -- what to exclude. Note that we're retaining the trailing space before "message": 
+      -- what to exclude. Note that we're retaining the trailing space before "message":
       local drupal_rest = record['drupal'].sub(0, msg_start + 1)
 
       record['drupal_message'] = drupal_message
       record['drupal_rest'] = drupal_rest
-      record['drupal_copy'] = record['drupal'] -- This is just here to reassure me that this block executed. 
+      record['drupal_copy'] = record['drupal'] -- This is just here to reassure me that this block executed.
     end
     -- 2 leaves timestamp unchanged
     return 2, timestamp, record
