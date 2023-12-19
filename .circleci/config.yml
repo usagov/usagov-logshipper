@@ -39,6 +39,7 @@ workflows:
           requires:
             - approve-deploy
 
+jobs:
   deploy-to-cloudgov-tools:
     machine:
       image: ubuntu-2004:202101-01
