@@ -35,6 +35,6 @@ workflows:
     jobs:
       - approve-deploy:
           type: approval
-      - deploy-logshipper:
+      - deploy-cloudgov:
           requires:
             - approve-deploy
