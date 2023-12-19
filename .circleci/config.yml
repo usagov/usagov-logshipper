@@ -10,11 +10,11 @@ commands:
       - checkout
       - install-cloud-foundry
       - run:
-	 name: CloudGov Deploy
-	 command: |
-	   cf login -a https://api.fr.cloud.gov -u $CF_SERVICE_USER -p $CF_SERVICE_PASS
-	   cf target -s << parameters.envname >>
-	   ./bin/deploy-logshipper.sh
+         name: CloudGov Deploy
+         command: |
+           cf login -a https://api.fr.cloud.gov -u $CF_SERVICE_USER -p $CF_SERVICE_PASS
+           cf target -s << parameters.envname >>
+           ./bin/deploy-logshipper.sh
 
   install-cloud-foundry:
     steps:
