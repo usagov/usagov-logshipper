@@ -1,0 +1,43 @@
+version: 2.1
+
+commands:
+  deploy-cloudgov:
+    parameters:
+      envname:
+        default: "tools"
+        type: string
+  build:
+    docker:
+      - image:
+  steps:
+    - checkout
+    - install-cloud-foundry
+    - run:
+       name: CloudGov Deploy
+       command: |
+         cf login -a https://api.fr.cloud.gov -u $CF_SERVICE_USER -p $CF_SERVICE_PASS
+         cf target -s << parameters.envname >>
+         ./bin/deploy-logshipper.sh
+
+  install-cloud-foundry:
+    steps:
+      - run:
+          name: Install Cloud Foundry
+          command: |
+            if command cf > /dev/null; then echo "CF client already installed"; exit 0; fi
+            wget --user-agent="Mozilla" -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | sudo apt-key add -
+            echo "deb https://packages.cloudfoundry.org/debian stable main" | sudo tee /etc/apt/sources.list.d/cloudfoundry-cli.list
+            sudo apt-get update
+            sudo apt-get install cf8-cli
+            cf -v
+
+workflows:
+  version: 3
+
+  deploy-logshipper:
+    jobs:
+      - approve-deploy:
+          type: approval
+      - deploy-logshipper:
+          requires:
+            - approve-deploy
