@@ -29,12 +29,19 @@ commands:
             cf -v
 
 workflows:
-  version: 3
+  version: 2
 
   deploy-logshipper:
     jobs:
       - approve-deploy:
           type: approval
-      - deploy-cloudgov:
+      - deploy-to-cloudgov-tools:
           requires:
             - approve-deploy
+
+  deploy-to-cloudgov-tools:
+    machine:
+      image: ubuntu-2004:202101-01
+    steps:
+      - deploy-cloudgov:
+          envname: tools
