@@ -6,9 +6,6 @@ commands:
       envname:
         default: "tools"
         type: string
-  build:
-    docker:
-      - image:
   steps:
     - checkout
     - install-cloud-foundry
