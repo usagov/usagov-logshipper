@@ -43,6 +43,7 @@ jobs:
   deploy-to-cloudgov-tools:
     machine:
       image: ubuntu-2004:202101-01
+      resource_class: medium
     steps:
       - deploy-cloudgov:
           envname: tools
