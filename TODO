@@ -1,0 +1,64 @@
+Deployment needs.
+
+Initial setup: 
+
+  * Credential services (in tools space):
+     New Relic ( -t "newrelic-creds" )
+     Log storage ( -t "logshipper-s3" )
+     create-basic-auth-creds
+
+  * push-app
+
+  * create a known route and bind it, e.g.,
+     cf create-route app.cloud.gov --hostname usagov-tools-logshipper
+     cf map-route fluentbit-drain usagov-tools-logshipper.app.cloud.gov
+
+  * bind services
+
+  * set-proxyroute
+
+  * create-log-drains
+
+regular deploy:
+
+  * push-app
+
+push-app:
+
+  * existing bin/deploy script 
+
+set-proxyroute
+
+  * set PROXYROUTE and restart -- get proxy_route from
+    egress app as in setup-egress-for-apps. We don't need the rest. 
+
+create-basic-auth-creds:
+   * Create USER/PASS
+   * Create or update logshipper-creds service ( -t "logshipper-creds" ) (gets USER/PASS)
+
+get-basic-auth-creds: 
+   * Retrieve from logshipper-creds service
+
+
+Rotate basic auth:
+   TODO: consider spinning up a whole new drain and services and
+   switching them so we don't lose logs
+   * create-basic-auth-creds
+   * update-log-drains
+
+create-log-drains:
+   Do for (dev, stage, prod, shared-egress) 
+   * get-basic-auth-creds
+   * TODO: get URL for drain
+   * create log drain service
+   * get all apps in space
+      * bind log drain to each app
+
+
+update-log-drains:
+   Do for (dev, stage, prod, shared-egress) 
+   * get-basic-auth-creds
+   * TODO: get URL for drain   
+   * update log drain service  
+
+  
