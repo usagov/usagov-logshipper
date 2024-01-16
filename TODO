@@ -1,4 +1,7 @@
-Deployment needs.
+Deployment needs. Below assumes a single logshipper in tools.
+
+Possibly (not deployment) use the Record Modifier plugin to add New
+Relic GUIDs: https://docs.fluentbit.io/manual/pipeline/filters/record-modifier
 
 Initial setup: 
 
