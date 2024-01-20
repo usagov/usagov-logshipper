@@ -1,5 +1,10 @@
 version: 2.1
 
+parameters:
+  action:
+    type: string
+    default: "redeploy"
+
 commands:
   deploy-app:
     parameters:
