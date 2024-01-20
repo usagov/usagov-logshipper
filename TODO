@@ -16,19 +16,13 @@ Initial setup:
      cf create-route app.cloud.gov --hostname usagov-tools-logshipper
      cf map-route fluentbit-drain usagov-tools-logshipper.app.cloud.gov
 
-  * bind services
+  * bind-services
 
   * set-proxyroute
 
-  * create-log-drains
+  * create-log-drains (happens in every env, skips log-shipper app) 
 
-regular deploy:
 
-  * push-app
-
-push-app:
-
-  * existing bin/deploy script 
 
 set-proxyroute
 
@@ -36,22 +30,18 @@ set-proxyroute
     egress app as in setup-egress-for-apps. We don't need the rest. 
 
 create-basic-auth-creds:
-   * Create USER/PASS
-   * Create or update logshipper-creds service ( -t "logshipper-creds" ) (gets USER/PASS)
-
-get-basic-auth-creds: 
-   * Retrieve from logshipper-creds service
+   * Use HTTP_USER, HTTP_PASS credentials from env. 
+   * Create or update logshipper-creds service ( -t "logshipper-creds" )
 
 
-Rotate basic auth:
-   TODO: consider spinning up a whole new drain and services and
-   switching them so we don't lose logs
+Rotate basic auth (SKIP FOR NOW) :
+   TODO: Add logic to cg-logshipper to manage multiple basic auth credentials for rotation
    * create-basic-auth-creds
    * update-log-drains
 
 create-log-drains:
    Do for (dev, stage, prod, shared-egress) 
-   * get-basic-auth-creds
+   * get-basic-auth-creds  PUNT, get from env
    * TODO: get URL for drain
    * create log drain service
    * get all apps in space
@@ -64,4 +54,14 @@ update-log-drains:
    * TODO: get URL for drain   
    * update log drain service  
 
-  
+==================================================
+DONE:
+
+regular deploy:
+
+  * push-app
+
+push-app:
+
+  * existing bin/deploy script 
+

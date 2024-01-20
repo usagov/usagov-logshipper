@@ -7,17 +7,13 @@ parameters:
 
 commands:
   deploy-app:
-    parameters:
-      envname:
-        default: "tools"
-        type: string
     steps:
       - checkout
       - install-cloud-foundry
       - run:
          name: CloudGov Deploy
          command: |
-           cf login -a https://api.fr.cloud.gov -u $CF_SERVICE_USER -p $CF_SERVICE_PASS -s << parameters.envname >>
+           cf target -s $LOG_SHIPPER_SPACE
            ./bin/deploy-logshipper.sh
 
   setup-services:
@@ -25,6 +21,7 @@ commands:
       - run:
           name: Set up services
           command: |
+            cf target -s $LOG_SHIPPER_SPACE
             ./bin/setup-services.sh
 
   create-route:
@@ -32,6 +29,7 @@ commands:
       - run:
           name: Create and bind route
           command: |
+            cf target -s $LOG_SHIPPER_SPACE
             cf create-route app.cloud.gov --hostname usagov-tools-logshipper
             cf map-route log-shipper usagov-tools-logshipper.app.cloud.gov
 
@@ -40,6 +38,7 @@ commands:
       - run:
           name: Bind services to app
           command: |
+            cf target -s $LOG_SHIPPER_SPACE
             cf bind-service log-shipper newrelic-creds
             cf bind-service log-shipper cg-logshipper-creds
             cf bind-service log-shipper log-storage
@@ -55,9 +54,20 @@ commands:
                  echo "Unable to find route to proxy app for this space"
                  exit 1
             fi
-            cf target -s tools
+            cf target -s $LOG_SHIPPER_SPACE
             cf set-env log-shipper PROXYROUTE $proxyroute
             cf restart log-shipper --strategy rolling
+
+  setup-log-drains:
+    steps:
+      - run:
+          name: Set up log drains
+          command: |
+            spacelist=("dev" "stage" "prod" "tools" "shared-egress")
+            for space in ${spacelist[@]}; do
+               cf target -s $space
+               ./bin/add-log-drains-for-space.sh
+            done
 
   install-cloud-foundry:
     steps:
@@ -70,6 +80,13 @@ commands:
             sudo apt-get update
             sudo apt-get install cf8-cli
             cf -v
+
+  login-cloud-gov:
+    steps:
+      - run:
+          name: Log in to cloud.gov
+            cf login -a https://api.fr.cloud.gov -u $CF_SERVICE_USER -p $CF_SERVICE_PASS -s $LOG_SHIPPER_SPACE
+
 
 workflows:
   version: 2
@@ -100,22 +117,26 @@ jobs:
     machine:
       image: ubuntu-2004:2023.10.1
       resource_class: medium
+    environment:
+      LOG_SHIPPER_SPACE: "tools"
     steps:
       - checkout
       - install-cloud-foundry
-      - deploy-app:
-          envname: "tools"
+      - login-cloud-gov
+      - deploy-app
 
   setup-services-and-deploy-app:
     machine:
       image: ubuntu-2004:2023.10.1
       resource_class: medium
+    environment:
+      LOG_SHIPPER_SPACE: "tools"
     steps:
       - checkout
       - install-cloud-foundry
+      - login-cloud-gov
       - setup-services
-      - deploy-app:
-          envname: "tools"
+      - deploy-app
       - create-route
       - bind-services
       - set-proxyroute
