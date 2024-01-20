@@ -104,7 +104,8 @@ jobs:
       - checkout
       - install-cloud-foundry
       - setup-services
-      - deploy-app-to-cloudgov-tools
+      - deploy-app:
+          envname: "tools"
       - create-route
       - bind-services
       - set-proxyroute
