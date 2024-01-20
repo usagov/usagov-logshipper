@@ -79,7 +79,7 @@ workflows:
 
   setup-services-and-deploy:
     when:
-      equal: [ launch, <<pipeline.parameters.action >> ]
+      equal: [ launch, << pipeline.parameters.action >> ]
     jobs:
       - approve-launch:
           type: approval
