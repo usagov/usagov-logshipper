@@ -30,6 +30,29 @@ commands:
             cf create-route app.cloud.gov --hostname usagov-tools-logshipper
             cf map-route log-shipper usagov-tools-logshipper.app.cloud.gov
 
+  bind-services:
+    steps:
+      - run:
+          name: Bind services to app
+          command: |
+            cf bind-service log-shipper newrelic-creds
+            cf bind-service log-shipper cg-logshipper-creds
+            cf bind-service log-shipper log-storage
+
+  set-proxyroute:
+    steps:
+      - run:
+          name: Set PROXYROUTE and restart
+          command: |
+            cf target -s shared-egress 2>&1 > /dev/null
+            proxyroute=$(cf env tools-proxy | grep proxy_route | awk '{print $2}')
+            if [ -z "$proxyroute" ]; then
+                 echo "Unable to find route to proxy app for this space"
+                 exit 1
+            fi
+            cf target -s tools
+            cf set-env log-shipper PROXYROUTE $proxyroute
+            cf restart log-shipper --strategy rolling
 
   install-cloud-foundry:
     steps:
@@ -54,6 +77,14 @@ workflows:
           requires:
             - approve-deploy
 
+  setup-services-and-deploy:
+    jobs:
+      - approve-launch:
+          type: approval
+      - setup-services-and-deploy-app:
+          requires:
+            - approve-launch
+
 jobs:
   deploy-app-to-cloudgov-tools:
     machine:
@@ -64,9 +95,16 @@ jobs:
       - install-cloud-foundry
       - deploy-app:
           envname: "tools"
-  setup-and-deploy-app:
+
+  setup-services-and-deploy-app:
     machine:
       image: ubuntu-2004:2023.10.1
       resource_class: medium
     steps:
       - checkout
+      - install-cloud-foundry
+      - setup-services
+      - deploy-app-to-cloudgov-tools
+      - create-route
+      - bind-services
+      - set-proxyroute
