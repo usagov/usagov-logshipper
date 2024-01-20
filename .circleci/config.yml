@@ -18,17 +18,17 @@ commands:
   setup-services:
     steps:
       - run:
-        name: Set up services
-        command: |
-          ./bin/setup-services.sh
+          name: Set up services
+          command: |
+            ./bin/setup-services.sh
 
   create-route:
     steps:
       - run:
-        name: Create and bind route
-        command: |
-          cf create-route app.cloud.gov --hostname usagov-tools-logshipper
-          cf map-route log-shipper usagov-tools-logshipper.app.cloud.gov
+          name: Create and bind route
+          command: |
+            cf create-route app.cloud.gov --hostname usagov-tools-logshipper
+            cf map-route log-shipper usagov-tools-logshipper.app.cloud.gov
 
 
   install-cloud-foundry:
