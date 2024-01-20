@@ -85,7 +85,7 @@ commands:
     steps:
       - run:
           name: Log in to cloud.gov
-	  command: |
+          command: |
             cf login -a https://api.fr.cloud.gov -u $CF_SERVICE_USER -p $CF_SERVICE_PASS -s $LOG_SHIPPER_SPACE
 
 
