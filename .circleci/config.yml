@@ -75,6 +75,9 @@ workflows:
   version: 2
 
   deploy-logshipper:
+    when:
+      not:
+        equal: [ launch, << pipeline.parameters.action >> ]
     jobs:
       - approve-deploy:
           type: approval
