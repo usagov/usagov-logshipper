@@ -14,4 +14,4 @@ cp -rp project_conf cg-logshipper
 
 cd cg-logshipper
 
-cf push --instances 2 --strategy rolling
+cf push log-shipper --instances 2 --strategy rolling

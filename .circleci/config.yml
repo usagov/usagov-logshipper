@@ -1,7 +1,7 @@
 version: 2.1
 
 commands:
-  deploy-cloudgov:
+  deploy-app:
     parameters:
       envname:
         default: "tools"
@@ -14,6 +14,22 @@ commands:
          command: |
            cf login -a https://api.fr.cloud.gov -u $CF_SERVICE_USER -p $CF_SERVICE_PASS -s << parameters.envname >>
            ./bin/deploy-logshipper.sh
+
+  setup-services:
+    steps:
+      - run:
+        name: Set up services
+        command: |
+          ./bin/setup-services.sh
+
+  create-route:
+    steps:
+      - run:
+        name: Create and bind route
+        command: |
+          cf create-route app.cloud.gov --hostname usagov-tools-logshipper
+          cf map-route log-shipper usagov-tools-logshipper.app.cloud.gov
+
 
   install-cloud-foundry:
     steps:
@@ -34,15 +50,23 @@ workflows:
     jobs:
       - approve-deploy:
           type: approval
-      - deploy-to-cloudgov-tools:
+      - deploy-app-to-cloudgov-tools:
           requires:
             - approve-deploy
 
 jobs:
-  deploy-to-cloudgov-tools:
+  deploy-app-to-cloudgov-tools:
     machine:
-      image: ubuntu-2004:202101-01
+      image: ubuntu-2004:2023.10.1
       resource_class: medium
     steps:
-      - deploy-cloudgov:
+      - checkout
+      - install-cloud-foundry
+      - deploy-app:
           envname: "tools"
+  setup-and-deploy-app:
+    machine:
+      image: ubuntu-2004:2023.10.1
+      resource_class: medium
+    steps:
+      - checkout
