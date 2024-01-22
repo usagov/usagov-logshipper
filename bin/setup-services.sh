@@ -21,7 +21,7 @@ if [ -z "$NEW_RELIC_LICENSE_KEY" ]; then
     VAR_MISSING=1
 fi
 
-if [ $VAR_MISSING ]; then
+if [ $VAR_MISSING -eq 1 ]; then
     echo "Required variable(s) missing, exiting"
     exit $VAR_MISSING
 fi
