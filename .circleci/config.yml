@@ -115,11 +115,11 @@ workflows:
 
 jobs:
   deploy-app-to-cloudgov-tools:
+    environment:
+      LOG_SHIPPER_SPACE: tools
     machine:
       image: ubuntu-2004:2023.10.1
       resource_class: medium
-    environment:
-      LOG_SHIPPER_SPACE: tools
     steps:
       - checkout
       - install-cloud-foundry
@@ -127,11 +127,11 @@ jobs:
       - deploy-app
 
   setup-services-and-deploy-app:
+    environment:
+      LOG_SHIPPER_SPACE: tools
     machine:
       image: ubuntu-2004:2023.10.1
       resource_class: medium
-    environment:
-      LOG_SHIPPER_SPACE: tools
     steps:
       - checkout
       - install-cloud-foundry
