@@ -28,8 +28,8 @@ commands:
           name: Create and bind route
           command: |
             cf target -s $LOG_SHIPPER_SPACE
-            cf create-route app.cloud.gov --hostname usagov-tools-logshipper
-            cf map-route log-shipper usagov-tools-logshipper.app.cloud.gov
+            cf create-route app.cloud.gov --hostname usagov-${LOG_SHIPPER_SPACE}-logshipper
+            cf map-route log-shipper app.cloud.gov --hostname  cf map-route log-shipper app.cloud.gov --hostname usagov-${LOG_SHIPPER_SPACE}-logshipper
 
   bind-services:
     steps:
@@ -47,7 +47,7 @@ commands:
           name: Set PROXYROUTE and restart
           command: |
             cf target -s shared-egress 2>&1 > /dev/null
-            proxyroute=$(cf env tools-proxy | grep proxy_route | awk '{print $2}')
+            proxyroute=$(cf env ${LOG_SHIPPER_SPACE}-proxy | grep proxy_route | awk '{print $2}')
             if [ -z "$proxyroute" ]; then
                  echo "Unable to find route to proxy app for this space"
                  exit 1
