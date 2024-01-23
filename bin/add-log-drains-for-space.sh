@@ -7,7 +7,7 @@ set -e
 set -o pipefail
 
 echo "Creating log-shipper-drain service"
-cf create-user-provided-service log-shipper-drain -l 'https://${HTTP_USER}:${HTTP_PASS}@usagov-tools-logshipper.app.cloud.gov/?drain-type=all'
+cf create-user-provided-service log-shipper-drain -l "https://${HTTP_USER}:${HTTP_PASS}@usagov-tools-logshipper.app.cloud.gov/?drain-type=all"
 
 applists=$(cf apps | tail -n +4 | awk '{print $1}')
 
