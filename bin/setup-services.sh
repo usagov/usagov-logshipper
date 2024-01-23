@@ -31,14 +31,14 @@ SERVICE_EXISTS=`cf service cg-logshipper-creds --guid`
 
 if [ "$SERVICE_EXISTS" = "FAILED" ]; then
     echo "Creating cg-logshipper-creds service"
-    cf create-user-provided-service cg-logshipper-creds -p '{"HTTP_USER": "$HTTP_USER", "HTTP_PASS": "$HTTP_PASS"}' -t "logshipper-creds"
+    cf create-user-provided-service cg-logshipper-creds -p "{\"HTTP_USER\": \"$HTTP_USER\", \"HTTP_PASS\": \"$HTTP_PASS\"}" -t "logshipper-creds"
 fi
 
 SERVICE_EXISTS=`cf service newrelic-creds --guid`
 
 if [ "$SERVICE_EXISTS" = "FAILED" ]; then
     echo "Creating newrelic-creds service"
-    cf create-user-provided-service newrelic-creds -p '{"NEW_RELIC_LICENSE_KEY":"$NEW_RELIC_LICENSE_KEY", "NEW_RELIC_LOGS_ENDPOINT": "https://gov-log-api.newrelic.com/log/v1"}' -t "newrelic-creds"
+    cf create-user-provided-service newrelic-creds -p "{\"NEW_RELIC_LICENSE_KEY\": \"$NEW_RELIC_LICENSE_KEY\", \"NEW_RELIC_LOGS_ENDPOINT\": \"https://gov-log-api.newrelic.com/log/v1\"}" -t "newrelic-creds"
 fi
 
 SERVICE_EXISTS=`cf service log-storage --guid`

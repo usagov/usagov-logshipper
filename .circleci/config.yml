@@ -29,7 +29,7 @@ commands:
           command: |
             cf target -s $LOG_SHIPPER_SPACE
             cf create-route app.cloud.gov --hostname usagov-${LOG_SHIPPER_SPACE}-logshipper
-            cf map-route log-shipper app.cloud.gov --hostname  cf map-route log-shipper app.cloud.gov --hostname usagov-${LOG_SHIPPER_SPACE}-logshipper
+            cf map-route log-shipper app.cloud.gov --hostname usagov-${LOG_SHIPPER_SPACE}-logshipper
 
   bind-services:
     steps:
