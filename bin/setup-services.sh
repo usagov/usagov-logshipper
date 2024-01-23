@@ -28,6 +28,7 @@ fi
 
 
 SERVICE_EXISTS=`cf service cg-logshipper-creds --guid`
+echo "SERVICE_EXISTS: '$SERVICE_EXISTS'"
 
 if [ -z $SERVICE_EXISTS ]; then
     echo "Creating cg-logshipper-creds service"
@@ -35,6 +36,7 @@ if [ -z $SERVICE_EXISTS ]; then
 fi
 
 SERVICE_EXISTS=`cf service newrelic-creds --guid`
+echo "SERVICE_EXISTS: '$SERVICE_EXISTS'"
 
 if [ -z $SERVICE_EXISTS ]; then
     echo "Creating newrelic-creds service"
@@ -42,6 +44,8 @@ if [ -z $SERVICE_EXISTS ]; then
 fi
 
 SERVICE_EXISTS=`cf service log-storage --guid`
+echo "SERVICE_EXISTS: '$SERVICE_EXISTS'"
+
 if [ -z $SERVICE_EXISTS ]; then
     echo "Creating log-storage service"
     cf create-service s3 basic log-storage -t "logshipper-s3"
