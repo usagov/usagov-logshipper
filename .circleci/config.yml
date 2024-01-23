@@ -41,8 +41,12 @@ commands:
             cf bind-service log-shipper cg-logshipper-creds
             cf bind-service log-shipper log-storage
 
-  set-proxyroute:
+  set-proxy:
     steps:
+      - run:
+          name: Add network policy for egress
+          command: |
+            cf add-network-policy log-shipper ${LOG_SHIPPER_SPACE}-proxy --protocol tcp --port 61443 -s shared-egress
       - run:
           name: Set PROXYROUTE and restart
           command: |
@@ -138,5 +142,5 @@ jobs:
       - deploy-app
       - create-route
       - bind-services
-      - set-proxyroute
+      - set-proxy
       - setup-log-drains
