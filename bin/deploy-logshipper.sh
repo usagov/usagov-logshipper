@@ -1,13 +1,17 @@
 #!/bin/bash
 
-if [ ! -d "cg-logshipper" ]; then
-    git clone --depth 1 --branch usagov_updates git@github.com:GSA-TTS/cg-logshipper.git
-else
-    pushd cg-logshipper; git pull; popd;
+# Always clear out the old cg-logshipper directory. We need to do this
+# if we've changed the branch/tag we want to deploy or if we've removed some files
+# from project_conf; it's easiest to just do it every time.
+if [ -d "cg-logshipper" ]; then
+   rm -rf cg-logshipper
 fi
 
-cp -rp project_conf cg-logshipper;
+# Clone cg-logshipper at the specified branch/tag
+git clone --depth 1 --branch usagov-1.0 git@github.com:usagov/cg-logshipper.git
 
-cd cg-logshipper;
+cp -rp project_conf cg-logshipper
 
-cf push;
+cd cg-logshipper
+
+cf push log-shipper --instances 2 --strategy rolling
