@@ -111,15 +111,15 @@ workflows:
     jobs:
       - approve-launch:
           type: approval
-	  filters:
-	    branches:
-	      only:
-	        - main
+          filters:
+            branches:
+              only:
+                - main
       - setup-services-and-deploy-app:
-	  filters:
-	    branches:
-	      only:
-	        - main
+          filters:
+            branches:
+              only:
+                - main
           requires:
             - approve-launch
 
