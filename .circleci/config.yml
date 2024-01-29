@@ -101,7 +101,15 @@ workflows:
     jobs:
       - approve-deploy:
           type: approval
+          filters:
+            branches:
+              only:
+                - main
       - deploy-app-to-cloudgov-tools:
+          filters:
+            branches:
+              only:
+                - main
           requires:
             - approve-deploy
 
