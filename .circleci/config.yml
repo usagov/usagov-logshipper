@@ -94,6 +94,10 @@ commands:
 workflows:
   version: 2
 
+  commit:
+    jobs:
+      - scan-code
+
   deploy-logshipper:
     when:
       not:
@@ -132,6 +136,22 @@ workflows:
             - approve-launch
 
 jobs:
+  scan-code:
+    machine:
+      image: ubuntu-2004:2023.10.1
+    steps:
+      - checkout
+      - run:
+        name: Scan Lua scripts
+        command: |
+          mkdir -p /tmp/results
+          touch /tmp/results/scan-lua-scripts.log
+          ./bin/scan-lua.sh | tee /tmp/results/scan-lua-scripts.log
+          export SCAN_LUA_RESULT=$?
+          echo "Lua scan return code: $SCAN_LUA_RESULT" | tee -a /tmp/results/scan-lua-scripts.log
+          cat /tmp/results/scan-lua-scripts.log
+          exit $SCAN_LUA_RESULT
+
   deploy-app-to-cloudgov-tools:
     environment:
       LOG_SHIPPER_SPACE: tools
