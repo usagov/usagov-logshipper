@@ -25,5 +25,4 @@ function parse_drupal_keys (_, timestamp, record) --luacheck: ignore
     return 2, timestamp, record
 end
 
--- Check for luacheck behavior on a very long line. Do we get a failing result just because of a warning?  Check for luacheck behavior on a very long line. Do we get a failing result just because of a warning? 
 
