@@ -145,6 +145,8 @@ jobs:
           name: Scan Lua scripts
           when: always
           command: |
+            mkdir -p /tmp/results
+            touch /tmp/results/scan-lua-scripts.log
             ./bin/scan-lua.sh | tee /tmp/results/scan-lua-scripts.log
       - store_artifacts:
           path: /tmp/results
