@@ -148,10 +148,6 @@ jobs:
             mkdir -p /tmp/results
             touch /tmp/results/scan-lua-scripts.log
             ./bin/scan-lua.sh | tee /tmp/results/scan-lua-scripts.log
-            export SCAN_LUA_RESULT=$?
-            echo "Lua scan return code: $SCAN_LUA_RESULT" | tee -a /tmp/results/scan-lua-scripts.log
-            cat /tmp/results/scan-lua-scripts.log
-            exit $SCAN_LUA_RESULT
       - store_artifacts:
           path: /tmp/results
 
