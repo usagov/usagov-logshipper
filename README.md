@@ -2,7 +2,7 @@
 
 ## Why this project
 
-This repo contains USAGov-specific configuration for the https://github.com/gsa-tts/cg-logshipper. It will probably be subsumed into the usagov-2021 repo.
+This repo contains USAGov-specific configuration for the https://github.com/gsa-tts/cg-logshipper.
 
 ## Contributing
 

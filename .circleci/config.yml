@@ -12,7 +12,7 @@ commands:
          name: CloudGov Deploy
          command: |
            cf target -s $LOG_SHIPPER_SPACE
-           ./bin/deploy-logshipper.sh
+           ./bin/deploy-logshipper.sh << pipeline.number >>
 
   setup-services:
     steps:
