@@ -14,7 +14,7 @@ if [ -d "cg-logshipper" ]; then
 fi
 
 # Clone cg-logshipper at the specified branch/tag
-git clone --depth 1 --branch usagov-1.0 git@github.com:usagov/cg-logshipper.git
+git clone --depth 1 --branch usagov-1.1 git@github.com:usagov/cg-logshipper.git
 
 # Copy in our own custom config
 cp -rp project_conf cg-logshipper
