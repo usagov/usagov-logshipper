@@ -4,9 +4,20 @@
 
 This repo contains USAGov-specific configuration for the https://github.com/gsa-tts/cg-logshipper.
 
+## Developer setup
+
+You will need the Cloud Foundry command line and a place to deploy the log-shipper in order to test your work. This project uses buildpacks and is not set up to run locally (e.g., in Docker). 
+
+Contributors on the USAGov team should run `bin/init` after cloning this repo. Currently, this simply installs a commit-msg hook. Then when starting a new feature, create a branch named for the Jira ticket of a new feature:
+
+```
+git checkout -b USAGOV-###-new-feature-branch
+```
+
 ## Contributing
 
 See [CONTRIBUTING](CONTRIBUTING.md) for additional information.
+
 
 ## Public domain
 
