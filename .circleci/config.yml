@@ -95,7 +95,8 @@ commands:
       - run:
           name: Set up log drain for a space.
           command: |
-             cf target -s $SPACE
+             space=<< pipeline.parameters.space >>
+             cf target -s $space
              ./bin/add-log-drains-for-space.sh
 
 
