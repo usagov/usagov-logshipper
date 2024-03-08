@@ -4,6 +4,9 @@ parameters:
   action:
     type: string
     default: "redeploy"
+  space:
+    type: string
+
 
 commands:
   deploy-app:
