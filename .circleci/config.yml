@@ -212,6 +212,8 @@ jobs:
       - setup-log-drains
 
   setup-log-drain-for-space:
+    environment:
+      LOG_SHIPPER_SPACE: tools
     machine:
       image: ubuntu-2004:2023.10.1
       resource_class: medium
