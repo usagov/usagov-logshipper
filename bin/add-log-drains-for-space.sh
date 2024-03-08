@@ -1,9 +1,8 @@
 #!/bin/bash
-
 # Adds a log drain for the specified space and binds it to each app
 # EXCEPT for "log-shipper"
 
-set -e
+set -o pipefail
 
 SERVICE_EXISTS=`cf service log-shipper-drain --guid`
 
