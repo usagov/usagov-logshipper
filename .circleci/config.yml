@@ -6,7 +6,7 @@ parameters:
     default: "redeploy"
   space:
     type: string
-
+    default: "dev"
 
 commands:
   deploy-app:
