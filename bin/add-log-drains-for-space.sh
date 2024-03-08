@@ -4,7 +4,6 @@
 # EXCEPT for "log-shipper"
 
 set -e
-set -o pipefail
 
 SERVICE_EXISTS=`cf service log-shipper-drain --guid`
 

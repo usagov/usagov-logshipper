@@ -106,6 +106,7 @@ workflows:
   version: 2
 
   commit:
+    unless: << pipeline.parameters.action >>
     jobs:
       - scan-code
 
