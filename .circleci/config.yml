@@ -156,13 +156,11 @@ workflows:
             branches:
               only:
                 - main
-                - USAGOV-1483-add-logshipper-drain-job
       - setup-log-drain-for-space:
           filters:
             branches:
               only:
                 - main
-                - USAGOV-1483-add-logshipper-drain-job
           requires:
             - approve-log-drain
 
