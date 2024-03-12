@@ -108,12 +108,12 @@ workflows:
           filters:
             branches:
               only:
-                - USAGOV-1414-Update-CircleCI-image
+                - main
       - deploy-app-to-cloudgov-tools:
           filters:
             branches:
               only:
-                - USAGOV-1414-Update-CircleCI-image
+                - main
           requires:
             - approve-deploy
 
@@ -126,12 +126,12 @@ workflows:
           filters:
             branches:
               only:
-                - USAGOV-1414-Update-CircleCI-image
+                - main
       - setup-services-and-deploy-app:
           filters:
             branches:
               only:
-                - USAGOV-1414-Update-CircleCI-image
+                - main
           requires:
             - approve-launch
 
