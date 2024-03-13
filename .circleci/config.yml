@@ -4,6 +4,9 @@ parameters:
   action:
     type: string
     default: "redeploy"
+  space:
+    type: string
+    default: "dev"
 
 commands:
   deploy-app:
@@ -90,6 +93,14 @@ commands:
           command: |
             cf login -a https://api.fr.cloud.gov -u $CF_SERVICE_USER -p $CF_SERVICE_PASS -s $LOG_SHIPPER_SPACE
 
+  setup-log-drain-for-space:
+    steps:
+      - run:
+          name: Set up log drain for a space.
+          command: |
+             cf target -s << pipeline.parameters.space >>
+             ./bin/add-log-drains-for-space.sh
+
 
 workflows:
   version: 2
@@ -135,6 +146,24 @@ workflows:
           requires:
             - approve-launch
 
+  apply-log-drain-to-space:
+    when:
+      equal: [ add-drain, << pipeline.parameters.action >> ]
+    jobs:
+      - approve-log-drain:
+          type: approval
+          filters:
+            branches:
+              only:
+                - main
+      - setup-log-drain-for-space:
+          filters:
+            branches:
+              only:
+                - main
+          requires:
+            - approve-log-drain
+
 jobs:
   scan-code:
     machine:
@@ -179,3 +208,15 @@ jobs:
       - bind-services
       - set-proxy
       - setup-log-drains
+
+  setup-log-drain-for-space:
+    environment:
+      LOG_SHIPPER_SPACE: tools
+    machine:
+      image: ubuntu-2004:2023.10.1
+      resource_class: medium
+    steps:
+      - checkout
+      - install-cloud-foundry
+      - login-cloud-gov
+      - setup-log-drain-for-space
