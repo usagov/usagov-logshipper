@@ -34,4 +34,4 @@ echo "    cg-logshipper commit:" $(git log -1 --pretty=format:"%H") >> ./DEPLOYE
 echo "    containertag:" $CONTAINERTAG >> ./DEPLOYED_VERSION.txt
 
 # And push the app from the cg-logshipper directory
-cf push log-shipper --instances 2 --strategy rolling
+cf push log-shipper --instances 2 --random-route --strategy rolling
