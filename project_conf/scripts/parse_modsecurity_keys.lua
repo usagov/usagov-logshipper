@@ -1,26 +1,35 @@
 -- Gets modsecurity record and returns a record with a json string of the modsecurity attributes.
 
 local modsecurity_attributes_json_string = function (orig_string)
-  -- Extract the ModSecurity message from the message field
-  local modsecurity_text = orig_string:match("ModSecurity:(.-)%[")
+  message, body, client, server, request, host = orig_string:match("ModSecurity:(.-)%[(.-)%], client: (.-), server: (.-), request: (.-), host: (.-)$")
 
-  -- Find text within square brackets and store in an array
-  local attributes = {}
-  table.insert(attributes, '"message":' .. modsecurity_text:gsub("^%s*(.-)%s*$", "%1"))
+  attributes = {}
+  table.insert(attributes, '"message":"' .. message:gsub("^%s*(.-)%s*$", "%1"):gsub('"', '\\"') .. '"')
+  table.insert(attributes, '"server":"' .. server:gsub("^%s*(.-)%s*$", "%1"):gsub('"', '\\"') .. '"')
+  table.insert(attributes, '"request":' .. request:gsub("^%s*(.-)%s*$", "%1"):gsub('"', '\\"'))
+  table.insert(attributes, '"host":' .. host:gsub("^%s*(.-)%s*$", "%1"):gsub('"', '\\"'))
   for attribute in string.gmatch(orig_string, "%[(.-)%]") do
 
     -- Split attribute by whitespace
-    local key, value = attribute:match("(%S+)%s+(.*)")
+    key, value = attribute:match("(%S+)%s+(.*)")
     if key and value then
-      attribute = '"' .. key .. '":' .. value:gsub("^%s*(.-)%s*$", "%1")
+      if key == "client" then
+        value = '"' .. value:gsub("^%s*(.-)%s*$", "%1") .. '"'
+      else
+        value = value:gsub("^%s*(.-)%s*$", "%1")
+      end
+      attribute = '"' .. key .. '":' .. value:gsub('"', '\\"')
     else
-      attribute = '"level":"' .. attribute:gsub("^%s*(.-)%s*$", "%1") .. '"'
+      attribute = '"level":"' .. attribute:gsub("^%s*(.-)%s*$", "%1"):gsub('"', '\\"') .. '"'
     end
     table.insert(attributes, attribute)
   end
 
-  -- Concatenate attributes into a JSON format for New Relic parsing
-  local final_string = table.concat(attributes, ",")
+  -- Concatenate attributes into a JSON formatted string for New Relic parsing
+  json_string = table.concat(attributes, ",")
+
+  -- wrap drupal field in brackets to make it parsable json
+  local final_string = "{" .. json_string .. "}"
   return final_string
 end
 
