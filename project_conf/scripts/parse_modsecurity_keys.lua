@@ -6,11 +6,12 @@ local modsecurity_attributes_json_string = function (orig_string)
 
   local attributes = {}
   table.insert(attributes, '"message":"' .. message:gsub("^%s*(.-)%s*$", "%1"):gsub('"', '\\"') .. '"')
+  table.insert(attributes, '"client":"' .. client:gsub("^%s*(.-)%s*$", "%1"):gsub('"', '\\"') .. '"')
   table.insert(attributes, '"server":"' .. server:gsub("^%s*(.-)%s*$", "%1"):gsub('"', '\\"') .. '"')
   table.insert(attributes, '"request":' .. request:gsub("^%s*(.-)%s*$", "%1"):gsub('"', '\\"'))
   table.insert(attributes, '"host":' .. host:gsub("^%s*(.-)%s*$", "%1"):gsub('"', '\\"'))
-  for attribute in string.gmatch(orig_string, "%[(.-)%]") do
 
+  for attribute in body do
     -- Split attribute by whitespace
     local key, value = attribute:match("(%S+)%s+(.*)")
     if key and value then
