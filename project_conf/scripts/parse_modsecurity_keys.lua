@@ -1,9 +1,10 @@
 -- Gets modsecurity record and returns a record with a json string of the modsecurity attributes.
 
 local modsecurity_attributes_json_string = function (orig_string)
-  message, body, client, server, request, host = orig_string:match("ModSecurity:(.-)%[(.-)%], client: (.-), server: (.-), request: (.-), host: (.-)$")
+  local message, body, client, server, request, host =
+    orig_string:match("ModSecurity:(.-)%[(.-)%], client: (.-), server: (.-), request: (.-), host: (.-)$")
 
-  attributes = {}
+  local attributes = {}
   table.insert(attributes, '"message":"' .. message:gsub("^%s*(.-)%s*$", "%1"):gsub('"', '\\"') .. '"')
   table.insert(attributes, '"server":"' .. server:gsub("^%s*(.-)%s*$", "%1"):gsub('"', '\\"') .. '"')
   table.insert(attributes, '"request":' .. request:gsub("^%s*(.-)%s*$", "%1"):gsub('"', '\\"'))
@@ -11,7 +12,7 @@ local modsecurity_attributes_json_string = function (orig_string)
   for attribute in string.gmatch(orig_string, "%[(.-)%]") do
 
     -- Split attribute by whitespace
-    key, value = attribute:match("(%S+)%s+(.*)")
+    local key, value = attribute:match("(%S+)%s+(.*)")
     if key and value then
       if key == "client" then
         value = '"' .. value:gsub("^%s*(.-)%s*$", "%1") .. '"'
@@ -26,7 +27,7 @@ local modsecurity_attributes_json_string = function (orig_string)
   end
 
   -- Concatenate attributes into a JSON formatted string for New Relic parsing
-  json_string = table.concat(attributes, ",")
+  local json_string = table.concat(attributes, ",")
 
   -- wrap drupal field in brackets to make it parsable json
   local final_string = "{" .. json_string .. "}"
