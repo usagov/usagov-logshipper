@@ -25,6 +25,12 @@ cp -rp project_conf cg-logshipper
 
 cd cg-logshipper
 
+# Increase the acceptable body size for POST bodies; 8K was too small.
+sed -i.bak \
+    -e "s|client_body_buffer_size 8K;|client_body_buffer_size 16K;|" \
+    -e "s|client_max_body_size 8K;|client_max_body_size 16K;|" \
+    ./nginx.conf
+
 # Write a status file we can inspect if needed:
 echo "USAGov log-shipper deployment version:" >> ./DEPLOYED_VERSION.txt
 echo "    built:" $(date) >> ./DEPLOYED_VERSION.txt
@@ -34,4 +40,4 @@ echo "    cg-logshipper commit:" $(git log -1 --pretty=format:"%H") >> ./DEPLOYE
 echo "    containertag:" $CONTAINERTAG >> ./DEPLOYED_VERSION.txt
 
 # And push the app from the cg-logshipper directory
-cf push log-shipper --instances 2 --strategy rolling
+cf push log-shipper --instances 2 --random-route --strategy rolling
