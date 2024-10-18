@@ -120,11 +120,13 @@ workflows:
             branches:
               only:
                 - main
+                - USAGOV-1488-scale-up
       - deploy-app-to-cloudgov-tools:
           filters:
             branches:
               only:
                 - main
+                - USAGOV-1488-scale-up
           requires:
             - approve-deploy
 
