@@ -1,6 +1,7 @@
 -- Gets modsecurity record and returns a record with a json string of the modsecurity attributes.
 
 local modsecurity_attributes_json_string = function (orig_string)
+  local final_string = "test"
   local message, body, client, server, request, host =
     orig_string:match("ModSecurity:(.-)%[(.-)%], client: (.-), server: (.-), request: (.-), host: (.-)$")
 
@@ -31,7 +32,7 @@ local modsecurity_attributes_json_string = function (orig_string)
   local json_string = table.concat(attributes, ",")
 
   -- wrap drupal field in brackets to make it parsable json
-  local final_string = "{" .. json_string .. "}"
+  final_string = "{" .. json_string .. "}"
   return final_string
 end
 
@@ -40,7 +41,9 @@ end
 -- (like most scripts, this function is called via fluentbit.conf,
 -- which expects it to be defined in this way)
 function parse_modsecurity_keys (_, timestamp, record) --luacheck: ignore
-  if (record["message"] ~= nil and string.find(record["message"], "ModSecurity")) then
+  record['test'] = "just show me something bro"
+  if (record["message"] ~= nil) then
+    record['test2'] = "did the check work?"
     record["modsecurity"] = modsecurity_attributes_json_string(record["message"])
   end
    -- 2 leaves timestamp unchanged
