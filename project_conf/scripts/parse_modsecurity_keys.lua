@@ -3,8 +3,10 @@
 -- This function is used to extract the main ModSecurity message from the message field
 local function extract_modsecurity_message_string(s)
   local startIndex = s:find("ModSecurity")
+
   if startIndex then
       local bracketIndex = s:find("%[", startIndex)
+
       if bracketIndex then
           return s:sub(startIndex, bracketIndex - 1)
       else
@@ -19,8 +21,10 @@ end
 local function extract_bracketed_data(s)
   local pattern = "%[(.-)%]"
   local matches = {}
+
   for match in s:gmatch(pattern) do
       local key, value = match:match("([^ ]+) (.+)")
+
       if key then
           table.insert(matches, '"' .. key .. '":"' .. (value or "") .. '"')
       else
@@ -35,6 +39,7 @@ end
 local function extract_trailing_data(s)
   local pattern = ", (%w+): (.+)"
   local matches = {}
+
   for key, value in s:gmatch(pattern) do
       table.insert(matches, '"' .. key .. '":"' .. value .. '"')
   end
