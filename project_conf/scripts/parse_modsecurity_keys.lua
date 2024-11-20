@@ -1,7 +1,7 @@
 -- Gets modsecurity record and returns a record with a json string of the modsecurity attributes.
 
 -- This function is used to extract the main ModSecurity message from the message field
-function extract_modsecurity_message_string(s)
+local function extract_modsecurity_message_string(s)
   local startIndex = s:find("ModSecurity")
   if startIndex then
       local bracketIndex = s:find("%[", startIndex)
@@ -17,7 +17,7 @@ function extract_modsecurity_message_string(s)
 end
 
 -- This function is used to extract the data from the bracketed sections of the message field
-function extract_bracketed_data(s)
+local function extract_bracketed_data(s)
   local pattern = "%[(.-)%]"
   local matches = {}
   for match in s:gmatch(pattern) do
@@ -33,7 +33,7 @@ function extract_bracketed_data(s)
 end
 
 -- This function is used to extract the data from the final four unbracketed attributes of the message field
-function extract_trailing_data(s)
+local function extract_trailing_data(s)
   local pattern = ", (%w+): (.+)"
   local matches = {}
   for key, value in s:gmatch(pattern) do
