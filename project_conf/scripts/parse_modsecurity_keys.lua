@@ -5,7 +5,6 @@ local function extract_modsecurity_message_string(s)
   local startIndex = s:find("ModSecurity")
   if startIndex then
       local bracketIndex = s:find("%[", startIndex)
-
       if bracketIndex then
           return s:sub(startIndex, bracketIndex - 1)
       else
