@@ -37,7 +37,7 @@ end
 
 -- This function is used to extract the data from the final four unbracketed attributes of the message field
 local function extract_trailing_data(s)
-  local pattern = ", (%w+): (.+)"
+  local pattern = ", (%w+): ([^,]+)"
   local matches = {}
   for key, value in s:gmatch(pattern) do
       table.insert(matches, '"' .. key .. '":"' .. value:gsub("^%s*(.-)%s*$", "%1"):gsub('"', '') .. '"')
@@ -76,3 +76,5 @@ function parse_modsecurity_keys (_, timestamp, record) --luacheck: ignore
    -- 2 leaves timestamp unchanged
   return 2, timestamp, record
 end
+
+print( modsecurity_attributes_json_string("2024/11/22 08:30:35 [error] 592#592: *5570 [client 139.162.3.5] ModSecurity: Access denied with code 400 (phase 2). Matched \"Operator `Eq' with parameter `0' against variable `REQBODY_ERROR' (Value: `1' ) [file \"/opt/owasp-crs/modsecurity.conf\"] [line \"60\"] [id \"200002\"] [rev \"\"] [msg \"Failed to parse request body.\"] [data \"Multipart parsing error: Multipart: Final boundary missing.\"] [severity \"2\"] [ver \"\"] [maturity \"0\"] [accuracy \"0\"] [hostname \"10.255.96.184\"] [uri \"/\"] [unique_id \"173226423539.277698\"] [ref \"v1298,1\"], client: 139.162.3.5, server: _, request: \"POST / HTTP/1.1\", host: \"waf.app.cloud.gov\", referrer: \"https://beta-dr.usa.gov\""))
