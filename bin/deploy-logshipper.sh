@@ -16,7 +16,7 @@ fi
 # Clone cg-logshipper and check out a specific commit
 git clone git@github.com:GSA-TTS/cg-logshipper.git
 pushd cg-logshipper
-git checkout 9b00429
+git checkout 2886a315b672dd12a56158538cfcd8ab617463d2
 popd
 
 
@@ -39,5 +39,5 @@ echo "    usagov-logshipper commit:" $USAGOV_COMMIT >> ./DEPLOYED_VERSION.txt
 echo "    cg-logshipper commit:" $(git log -1 --pretty=format:"%H") >> ./DEPLOYED_VERSION.txt
 echo "    containertag:" $CONTAINERTAG >> ./DEPLOYED_VERSION.txt
 
-# And push the app from the cg-logshipper directory
-cf push log-shipper --instances 2 --random-route --strategy rolling
+# Push the app from the cg-logshipper directory
+cf push log-shipper --instances 3 --memory 256M --random-route --strategy rolling
