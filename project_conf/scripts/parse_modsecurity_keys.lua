@@ -8,9 +8,9 @@ local function extract_modsecurity_message_string(s)
       local bracketIndex = s:find("%[", startIndex)
 
       if bracketIndex then
-          return s:sub(startIndex, bracketIndex - 1)
+          return '"message":"' .. s:sub(startIndex, bracketIndex - 1):gsub("^%s*(.-)%s*$", "%1"):gsub('"', '\\"') .. '"'
       else
-          return '"message":"' .. s:sub(startIndex) .. '"'
+          return '"message":"' .. s:sub(startIndex):gsub("^%s*(.-)%s*$", "%1"):gsub('"', '\\"') .. '"'
       end
   else
       return '"message":"none"'
@@ -26,10 +26,10 @@ local function extract_bracketed_data(s)
       local key, value = match:match("([^ ]+) (.+)")
 
       if key then
-          table.insert(matches, '"' .. key .. '":"' .. (value or "") .. '"')
+          table.insert(matches, '"' .. key .. '":"' .. (value:gsub("^%s*(.-)%s*$", "%1"):gsub('"', '') or "") .. '"')
       else
           -- the only time there is no key is when the match is the level
-          table.insert(matches, '"level":"' .. (match or "") .. '"')
+          table.insert(matches, '"level":"' .. (match:gsub("^%s*(.-)%s*$", "%1"):gsub('"', '') or "") .. '"')
       end
   end
   return matches
@@ -39,9 +39,8 @@ end
 local function extract_trailing_data(s)
   local pattern = ", (%w+): (.+)"
   local matches = {}
-
   for key, value in s:gmatch(pattern) do
-      table.insert(matches, '"' .. key .. '":"' .. value .. '"')
+      table.insert(matches, '"' .. key .. '":"' .. value:gsub("^%s*(.-)%s*$", "%1"):gsub('"', '') .. '"')
   end
   return matches
 end
