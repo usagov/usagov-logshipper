@@ -37,7 +37,7 @@ end
 
 -- This function is used to extract the data from the final four unbracketed attributes of the message field
 local function extract_trailing_data(s)
-  local pattern = ", (%w+): (.+)"
+  local pattern = ", (%w+): ([^,]+)"
   local matches = {}
   for key, value in s:gmatch(pattern) do
       table.insert(matches, '"' .. key .. '":"' .. value:gsub("^%s*(.-)%s*$", "%1"):gsub('"', '') .. '"')
