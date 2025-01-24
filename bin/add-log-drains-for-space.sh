@@ -4,13 +4,16 @@
 
 set -o pipefail
 
-SPACE=${SPACE:-tools}
+if [ -z "$HOSTNAME" ]; then
+    echo "HOSTNAME var is not set"
+    exit 1
+fi
 
 SERVICE_EXISTS=`cf service log-shipper-drain --guid`
 
 if [ "$SERVICE_EXISTS" = "FAILED" ]; then
     echo "Creating log-shipper-drain service"
-    cf create-user-provided-service log-shipper-drain -l "https://${HTTP_USER}:${HTTP_PASS}@usagov-${SPACE}-logshipper.app.cloud.gov/?drain-type=all"
+    cf create-user-provided-service log-shipper-drain -l "https://${HTTP_USER}:${HTTP_PASS}@${HOSTNAME}-logshipper.app.cloud.gov/?drain-type=all"
 else
     echo "Service log-shipper-drain already exists."
 fi
