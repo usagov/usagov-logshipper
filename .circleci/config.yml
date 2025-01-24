@@ -68,7 +68,7 @@ commands:
       - run:
           name: Set up log drains
           command: |
-	    HOSTNAME=usagov-ASDf
+            HOSTNAME=usagov-tools
             spacelist=("dev" "stage" "prod" "tools" "shared-egress")
             for space in ${spacelist[@]}; do
                cf target -s $space
