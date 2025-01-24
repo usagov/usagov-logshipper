@@ -19,10 +19,10 @@ git checkout -b USAGOV-###-new-feature-branch
 You can do a smoke-test of the log-shipper in a cloud.gov sandbox. In addition to the services the log-shipper needs, you'll need a log-producer (that is, an app!) connect to your test log-shipper via a log drain. The app can be in the same sandbox or in a separate space (log drains are space-agnostic).
 
 1. Set the following environment variables:
-  - HTTP_USER and HTTP_PASS: You can generate random strings, as long as they are suitable for inclusion in a These are basic auth strings that the setup scripts will apply to both the cg-logshipper-creds service it creates, and to the log drains.
-  - HTTP_PASS: basic auth password
-  - HOSTNAME: a string to distinguish your log-shipper from all the others in its route name. Our deployment tooling uses "usagov-" and the name fo the space where the log-shipper is deployed. (Note that sandbox space names have periods in them, which don't play well in route names.)
-  - NEW_RELIC_LICENSE_KEY -- can be a random string if you don't want to send data to New Relic. (The log-shipper strongly assumes you do want to send data to New Relic and won't start up if it doesn't at least have defined credentials. You'll get error messages about not being able to connect and you can ignore them.)
+   - HTTP_USER and HTTP_PASS: You can generate random strings, as long as they are suitable for inclusion in a These are basic auth strings that the setup scripts will apply to both the cg-logshipper-creds service it creates, and to the log drains.
+   - HTTP_PASS: basic auth password
+   - HOSTNAME: a string to distinguish your log-shipper from all the others in its route name. Our deployment tooling uses "usagov-" and the name fo the space where the log-shipper is deployed. (Note that sandbox space names have periods in them, which don't play well in route names.)
+   - NEW_RELIC_LICENSE_KEY -- can be a random string if you don't want to send data to New Relic. (The log-shipper strongly assumes you do want to send data to New Relic and won't start up if it doesn't at least have defined credentials. You'll get error messages about not being able to connect and you can ignore them.)
 2. _Optionally_, un-comment the first part of `project_conf/fluentbit.conf`, which defines a `stdout` OUTPUT. This will allow you to see the log-shipper's output by using the `cf logs` command.
 3. Target the space where the log-shipper will run: `cf target -s my.space`
 4. Run `bin/setup-services.sh`. This will create user-provided services "cg-logshipper-creds" and "newrelic-creds," and an s3 service "logshipper-s3."
