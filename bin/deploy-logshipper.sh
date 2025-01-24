@@ -3,6 +3,7 @@
 NUM_INSTANCES=${1:-"1"}
 CONTAINERTAG=${2:-"/no pipeline number/"}
 
+
 # Get our branch and commit has for the status file:
 USAGOV_BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || echo "")
 USAGOV_COMMIT=$(git log -1 --pretty=format:"%H")
