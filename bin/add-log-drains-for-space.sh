@@ -11,7 +11,7 @@ if [ -z "$HOSTNAME" ]; then
     exit 1
 fi
 
-SERVICE_EXISTS=`cf service ${DRAIN_NAME} --guid`
+SERVICE_EXISTS=$(cf service ${DRAIN_NAME} --guid)
 
 if [ "$SERVICE_EXISTS" = "FAILED" ]; then
     echo "Creating ${DRAIN_NAME} service"
