@@ -15,7 +15,7 @@ commands:
          name: CloudGov Deploy
          command: |
            cf target -s $LOG_SHIPPER_SPACE
-	   # First argument to deploy-logshipper.sh is the number of instances (default 1)
+           # First argument to deploy-logshipper.sh is the number of instances (default 1)
            ./bin/deploy-logshipper.sh 3 << pipeline.number >>
 
   setup-services:
