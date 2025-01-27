@@ -1,6 +1,8 @@
 #!/bin/bash
 
-CONTAINERTAG=${1:-"/no pipeline number/"}
+NUM_INSTANCES=${1:-"1"}
+CONTAINERTAG=${2:-"/no pipeline number/"}
+
 
 # Get our branch and commit has for the status file:
 USAGOV_BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || echo "")
@@ -13,12 +15,9 @@ if [ -d "cg-logshipper" ]; then
    rm -rf cg-logshipper
 fi
 
-# Clone cg-logshipper and check out a specific commit
-git clone git@github.com:GSA-TTS/cg-logshipper.git
-pushd cg-logshipper
-git checkout 2886a315b672dd12a56158538cfcd8ab617463d2
-popd
-
+# Clone cg-logshipper and check out a specific commit.
+# The v1.0 tag gets us fluent-bit 3.2.4
+git clone -b v1.0 git@github.com:GSA-TTS/cg-logshipper.git
 
 # Copy in our own custom config
 cp -rp project_conf cg-logshipper
@@ -40,4 +39,4 @@ echo "    cg-logshipper commit:" $(git log -1 --pretty=format:"%H") >> ./DEPLOYE
 echo "    containertag:" $CONTAINERTAG >> ./DEPLOYED_VERSION.txt
 
 # Push the app from the cg-logshipper directory
-cf push log-shipper --instances 3 --memory 256M --no-route --strategy rolling
+cf push log-shipper --instances ${NUM_INSTANCES} --memory 256M --no-route --strategy rolling
