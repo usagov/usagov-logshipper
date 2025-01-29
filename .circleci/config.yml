@@ -15,7 +15,8 @@ commands:
          name: CloudGov Deploy
          command: |
            cf target -s $LOG_SHIPPER_SPACE
-           ./bin/deploy-logshipper.sh << pipeline.number >>
+           # First argument to deploy-logshipper.sh is the number of instances (default 1)
+           ./bin/deploy-logshipper.sh 3 << pipeline.number >>
 
   setup-services:
     steps:
@@ -68,6 +69,7 @@ commands:
       - run:
           name: Set up log drains
           command: |
+            HOSTNAME=usagov-tools
             spacelist=("dev" "stage" "prod" "tools" "shared-egress")
             for space in ${spacelist[@]}; do
                cf target -s $space
@@ -183,6 +185,7 @@ jobs:
   deploy-app-to-cloudgov-tools:
     environment:
       LOG_SHIPPER_SPACE: tools
+      HOSTNAME: usagov-tools
     machine:
       image: ubuntu-2204:current
       resource_class: medium
@@ -195,6 +198,7 @@ jobs:
   setup-services-and-deploy-app:
     environment:
       LOG_SHIPPER_SPACE: tools
+      HOSTNAME: usagov-tools
     machine:
       image: ubuntu-2204:current
       resource_class: medium
@@ -212,6 +216,7 @@ jobs:
   setup-log-drain-for-space:
     environment:
       LOG_SHIPPER_SPACE: tools
+      HOSTNAME: usagov-tools
     machine:
       image: ubuntu-2004:2023.10.1
       resource_class: medium
