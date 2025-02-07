@@ -3,6 +3,17 @@
 NUM_INSTANCES=${1:-"1"}
 CONTAINERTAG=${2:-"/no pipeline number/"}
 
+function appExists {  # appname
+  app=$1
+  if [ -z "$app" ]; then
+    echo "ERROR: appname is required"
+    exit 1
+  fi
+  cf app $app > /dev/null 2>&1
+  return $?
+}
+
+
 
 # Get our branch and commit has for the status file:
 USAGOV_BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || echo "")
@@ -38,5 +49,10 @@ echo "    usagov-logshipper commit:" $USAGOV_COMMIT >> ./DEPLOYED_VERSION.txt
 echo "    cg-logshipper commit:" $(git log -1 --pretty=format:"%H") >> ./DEPLOYED_VERSION.txt
 echo "    containertag:" $CONTAINERTAG >> ./DEPLOYED_VERSION.txt
 
+NO_ROUTE="--no-route"
+if appExists log-shipper; then
+    NO_ROUTE=""
+fi
+
 # Push the app from the cg-logshipper directory
-cf push log-shipper --instances ${NUM_INSTANCES} --memory 256M --no-route --strategy rolling
+cf push log-shipper --instances ${NUM_INSTANCES} ${NO_ROUTE} --memory 256M --strategy rolling
