@@ -27,8 +27,7 @@ if [ -d "cg-logshipper" ]; then
 fi
 
 # Clone cg-logshipper and check out a specific commit.
-# The v1.0 tag gets us fluent-bit 3.2.4
-git clone -b v1.0 git@github.com:GSA-TTS/cg-logshipper.git
+git clone -b fluent-3.2.10 git@github.com:GSA-TTS/cg-logshipper.git
 
 # Copy in our own custom config
 cp -rp project_conf cg-logshipper
