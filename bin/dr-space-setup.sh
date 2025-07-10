@@ -36,10 +36,6 @@ else
   echo "NEW_RELIC_LICENSE_KEY:  $NEW_RELIC_LICENSE_KEY"
 fi
 
-echo "Please set NEW_RELIC_LICENSE_KEY"
-echo "To get a key, go to one.newrelic.com and generate a new “INGEST - LICENSE” key"
-exit
-
 # Setup services
  echo cf target -o $ORG -s $LOG_SHIPPER_SPACE
  $echo cf target -o $ORG -s $LOG_SHIPPER_SPACE
