@@ -37,23 +37,23 @@ else
 fi
 
 # Setup services
- echo cf target -o $ORG -s $LOG_SHIPPER_SPACE
- $echo cf target -o $ORG -s $LOG_SHIPPER_SPACE
- echo ./bin/setup-services.sh
- $echo ./bin/setup-services.sh
- exit
+echo cf target -o $ORG -s $LOG_SHIPPER_SPACE
+$echo cf target -o $ORG -s $LOG_SHIPPER_SPACE
+echo ./bin/setup-services.sh
+$echo ./bin/setup-services.sh
+exit
 
 # Deploy log-shipper
- echo ./bin/deploy-logshipper.sh 0000
- $echo ./bin/deploy-logshipper.sh 0000
- exit
+echo ./bin/deploy-logshipper.sh 1
+$echo ./bin/deploy-logshipper.sh 1
+exit
 
 # Create routes
- echo cf create-route app.cloud.gov --hostname usagov-${LOG_SHIPPER_SPACE}-logshipper
- $echo cf create-route app.cloud.gov --hostname usagov-${LOG_SHIPPER_SPACE}-logshipper
- echo cf map-route log-shipper app.cloud.gov --hostname usagov-${LOG_SHIPPER_SPACE}-logshipper
- $echo cf map-route log-shipper app.cloud.gov --hostname usagov-${LOG_SHIPPER_SPACE}-logshipper
- exit
+echo cf create-route app.cloud.gov --hostname usagov-${LOG_SHIPPER_SPACE}-logshipper
+$echo cf create-route app.cloud.gov --hostname usagov-${LOG_SHIPPER_SPACE}-logshipper
+echo cf map-route log-shipper app.cloud.gov --hostname usagov-${LOG_SHIPPER_SPACE}-logshipper
+$echo cf map-route log-shipper app.cloud.gov --hostname usagov-${LOG_SHIPPER_SPACE}-logshipper
+exit
 
 # Bind services
  echo cf bind-service log-shipper newrelic-creds
@@ -65,9 +65,9 @@ fi
  exit
 
 # Add network policies
- echo cf add-network-policy log-shipper ${LOG_SHIPPER_SPACE}-proxy --protocol tcp --port 61443 -s ${EGRESS_SPACE}
- $echo cf add-network-policy log-shipper ${LOG_SHIPPER_SPACE}-proxy --protocol tcp --port 61443 -s ${EGRESS_SPACE}
- exit
+echo cf add-network-policy log-shipper ${LOG_SHIPPER_SPACE}-proxy --protocol tcp --port 61443 -s ${EGRESS_SPACE}
+$echo cf add-network-policy log-shipper ${LOG_SHIPPER_SPACE}-proxy --protocol tcp --port 61443 -s ${EGRESS_SPACE}
+exit
 
 #
 # Set up log drains for app space
