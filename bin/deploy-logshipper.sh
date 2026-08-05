@@ -26,8 +26,8 @@ if [ -d "cg-logshipper" ]; then
    rm -rf cg-logshipper
 fi
 
-# Clone cg-logshipper and check out a specific commit.
-git clone -b fluent-5.0.9 git@github.com:GSA-TTS/cg-logshipper.git
+# Clone cg-logshipper at a specific tag.
+git clone -b fluent-5.0 git@github.com:GSA-TTS/cg-logshipper.git
 
 # Copy in our own custom config
 cp -rp project_conf cg-logshipper
