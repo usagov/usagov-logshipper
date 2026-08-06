@@ -26,19 +26,13 @@ if [ -d "cg-logshipper" ]; then
    rm -rf cg-logshipper
 fi
 
-# Clone cg-logshipper and check out a specific commit.
-git clone -b fluent-3.2.10 git@github.com:GSA-TTS/cg-logshipper.git
+# Clone cg-logshipper at a specific tag.
+git clone -b fluent-5.0 git@github.com:GSA-TTS/cg-logshipper.git
 
 # Copy in our own custom config
 cp -rp project_conf cg-logshipper
 
 cd cg-logshipper
-
-# Increase the acceptable body size for POST bodies; 8K was too small.
-sed -i.bak \
-    -e "s|client_body_buffer_size 8K;|client_body_buffer_size 16K;|" \
-    -e "s|client_max_body_size 8K;|client_max_body_size 16K;|" \
-    ./nginx.conf
 
 # Write a status file we can inspect if needed:
 echo "USAGov log-shipper deployment version:" >> ./DEPLOYED_VERSION.txt
