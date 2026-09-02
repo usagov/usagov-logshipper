@@ -1,68 +1,119 @@
 -- Gets modsecurity record and returns a record with a json string of the modsecurity attributes.
+--
+-- Parses ModSecurity's nginx error-log alert line, e.g.
+--   2026/08/27 18:30:36 [info] 280#280: *4009 ModSecurity: Warning. Matched
+--   "Operator `Rx' with parameter `^0?$' against variable `ARGS:q' (Value: `x' )
+--   [file "..."] [line "171"] [id "920170"] [msg "..."] [tag "a"] [tag "b"]
+--   ..., client: 1.2.3.4, server: _, request: "GET / HTTP/1.1", host: "..."
+--
+-- The bracketed fields are always of the shape [word "value"]. Regex operator
+-- parameters also contain square brackets -- [^>]*, [\s\S], [\d.] -- but never
+-- in that shape, so matching the full shape rather than any [...] is what keeps
+-- @rx rules parsing correctly.
 
--- This function is used to extract the main ModSecurity message from the message field
+-- Escape a Lua string for inclusion in a JSON string literal.
+-- Backslash must be escaped first, or it would double-escape the others.
+local function json_escape(s)
+  s = s:gsub('\\', '\\\\')
+  s = s:gsub('"', '\\"')
+  s = s:gsub('%c', function(c) return string.format('\\u%04X', string.byte(c)) end)
+  return s
+end
+
+local function trim(s)
+  return (s:gsub("^%s*(.-)%s*$", "%1"))
+end
+
+-- The human-readable part: from "ModSecurity" up to the first real bracketed
+-- field. Cutting at the first "[" instead would truncate inside the regex that
+-- @rx rules print as their operator parameter.
 local function extract_modsecurity_message_string(s)
-  local startIndex = s:find("ModSecurity")
+  local startIndex = s:find("ModSecurity", 1, true)
+  if not startIndex then
+    return nil
+  end
+  local tail = s:sub(startIndex)
+  local cut = tail:find('%s%[[%w_]+%s"')
+  if cut then
+    tail = tail:sub(1, cut - 1)
+  end
+  return trim(tail)
+end
 
-  if startIndex then
-      local bracketIndex = s:find("%[", startIndex)
-
-      if bracketIndex then
-          return '"message":"' .. s:sub(startIndex, bracketIndex - 1):gsub("^%s*(.-)%s*$", "%1"):gsub('"', '\\"') .. '"'
-      else
-          return '"message":"' .. s:sub(startIndex):gsub("^%s*(.-)%s*$", "%1"):gsub('"', '\\"') .. '"'
+-- All [key "value"] fields. Repeated keys (tag) are joined rather than emitted
+-- twice, which would produce duplicate JSON keys and lose all but the last.
+local function extract_bracketed_data(s, out)
+  local repeated = {}
+  for key, value in s:gmatch('%[([%w_]+)%s"([^"]*)"%]') do
+    if out[key] == nil then
+      out[key] = value
+    else
+      if repeated[key] == nil then
+        repeated[key] = { out[key] }
       end
-  else
-      return '"message":"none"'
-  end
-end
-
--- This function is used to extract the data from the bracketed sections of the message field
-local function extract_bracketed_data(s)
-  local pattern = "%[(.-)%]"
-  local matches = {}
-
-  for match in s:gmatch(pattern) do
-      local key, value = match:match("([^ ]+) (.+)")
-
-      if key then
-          table.insert(matches, '"' .. key .. '":"' .. (value:gsub("^%s*(.-)%s*$", "%1"):gsub('"', '') or "") .. '"')
-      else
-          -- the only time there is no key is when the match is the level
-          table.insert(matches, '"level":"' .. (match:gsub("^%s*(.-)%s*$", "%1"):gsub('"', '') or "") .. '"')
-      end
-  end
-  return matches
-end
-
--- This function is used to extract the data from the final four unbracketed attributes of the message field
-local function extract_trailing_data(s)
-  local pattern = ", (%w+): ([^,]+)"
-  local matches = {}
-  for key, value in s:gmatch(pattern) do
-      table.insert(matches, '"' .. key .. '":"' .. value:gsub("^%s*(.-)%s*$", "%1"):gsub('"', '') .. '"')
-  end
-  return matches
-end
-
-local function tableMerge(result, ...)
-  for _, t in ipairs({...}) do
-    for _, v in ipairs(t) do
-      table.insert(result, v)
+      table.insert(repeated[key], value)
     end
+  end
+  for key, list in pairs(repeated) do
+    out[key] = table.concat(list, ",")
+  end
+end
+
+-- nginx's own prefix: "2026/08/27 18:30:36 [info] 280#280: *4009 ..."
+-- Anchored so a bare [word] inside a regex cannot be mistaken for the level.
+local function extract_nginx_prefix(s, out)
+  local level = s:match('^%s*%d+/%d+/%d+%s+%d+:%d+:%d+%s+%[(%a+)%]')
+  if level then
+    out["level"] = level
+  end
+  local client = s:match('%[client%s+([^%]]+)%]')
+  if client then
+    out["client"] = trim(client)
+  end
+end
+
+-- The unbracketed trailer: ", client: 1.2.3.4, server: _, request: "...", host: "..."
+-- Scanned only from ", client:" onward so that commas inside a regex or inside
+-- [data "..."] cannot produce spurious keys.
+local function extract_trailing_data(s, out)
+  local tpos = s:find(',%s*client:%s')
+  if not tpos then
+    return
+  end
+  for key, value in s:sub(tpos):gmatch(',%s*([%w_]+):%s*([^,]+)') do
+    value = trim(value)
+    local unquoted = value:match('^"(.*)"$')
+    out[key] = unquoted or value
   end
 end
 
 local modsecurity_attributes_json_string = function (orig_string)
-  local attributes = {}
-  local message = extract_modsecurity_message_string(orig_string)
-  local bracketed = extract_bracketed_data(orig_string)
-  local trailing = extract_trailing_data(orig_string)
+  local fields = {}
 
-  tableMerge(attributes, {message}, bracketed, trailing)
+  extract_nginx_prefix(orig_string, fields)
+  extract_bracketed_data(orig_string, fields)
+  extract_trailing_data(orig_string, fields)
+
+  local message = extract_modsecurity_message_string(orig_string)
+  fields["message"] = message or "none"
+
+  -- Stable key order keeps the output diffable; message first for readability.
+  local keys = {}
+  for k in pairs(fields) do
+    if k ~= "message" then
+      table.insert(keys, k)
+    end
+  end
+  table.sort(keys)
+  table.insert(keys, 1, "message")
+
+  local parts = {}
+  for _, k in ipairs(keys) do
+    table.insert(parts, '"' .. json_escape(k) .. '":"' .. json_escape(tostring(fields[k])) .. '"')
+  end
 
   -- Concatenate attributes into a JSON formatted string for New Relic parsing
-  return "{" .. table.concat(attributes, ",") .. "}"
+  return "{" .. table.concat(parts, ",") .. "}"
 end
 
 -- The --luacheck:ignore comment suppresses a warning about setting
